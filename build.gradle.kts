@@ -20,6 +20,7 @@ dependencies {
     // (in a separate module for demo project and in testMain).
     // With compose.desktop.common you will also lose @Preview functionality
     implementation(compose.desktop.currentOs)
+    implementation("org.mariuszgromada.math:MathParser.org-mXparser:4.4.2")
 }
 
 compose.desktop {
@@ -28,7 +29,7 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "demo1"
+            packageName = "Calculator for Windows"
             packageVersion = "1.0.0"
         }
     }
