@@ -1,9 +1,16 @@
 package UI
 
 import Config.CALCULATOR_PADDING
+import UI.CalculatorStyle.KEY_ACTIVE_BACKGROUND
+import UI.CalculatorStyle.KEY_BORDER_COLOR
+import UI.CalculatorStyle.KEY_BORDER_WIDTH
+import UI.KeyboardLayout.HigherITFKeyboardLayout
+import UI.KeyboardLayout.HigherKeyboardLayout
+import UI.KeyboardLayout.SimpleKeyboardLayout
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -17,9 +24,11 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-val KEY_BORDER_WIDTH = 1.dp
-val KEY_BORDER_COLOR = Color.Gray
-val KEY_ACTIVE_BACKGROUND = Color.White
+object CalculatorStyle {
+    val KEY_BORDER_WIDTH = 1.dp
+    val KEY_BORDER_COLOR = Color.Gray
+    val KEY_ACTIVE_BACKGROUND = Color.White
+}
 
 //计算器背景
 @Composable
@@ -45,7 +54,11 @@ fun CalculatorKey(
         verticalArrangement = Arrangement.Center,
         modifier = modifier.fillMaxWidth()
             .padding(CALCULATOR_PADDING)
-            .clickable { onClick() }
+            .clickable(
+                onClick = { onClick() },
+                indication = null, // 设置为 null 去掉水波纹效果
+                interactionSource = remember { MutableInteractionSource() }
+            )
             .background(if (active) KEY_ACTIVE_BACKGROUND else MaterialTheme.colors.background)
             .border(width = KEY_BORDER_WIDTH, color = KEY_BORDER_COLOR, shape = RoundedCornerShape(8.dp))
             .onPointerEvent(PointerEventType.Move) {
@@ -104,7 +117,9 @@ fun CalculatorKeyView(modifier: Modifier, key: Key?, mainOutput: MutableState<Te
 
 @Composable
 fun CalculatorKeyboard(mainOutput: MutableState<TextFieldValue>) {
-    val currentKeyBoard = if (KeyBoardValues) HigherKeyboardLayout else SimpleKeyboardLayout
+    val currentKeyBoard = if (KeyBoardValues) {
+        if (!IFTValues) HigherKeyboardLayout else HigherITFKeyboardLayout
+    } else SimpleKeyboardLayout
     Row(modifier = Modifier.fillMaxSize()) {
         currentKeyBoard.forEach { keyColumn ->
             Column(modifier = Modifier.weight(1f)) {
@@ -115,6 +130,7 @@ fun CalculatorKeyboard(mainOutput: MutableState<TextFieldValue>) {
         }
     }
 }
+
 @Composable
 fun Calculator(
     modifier: Modifier,

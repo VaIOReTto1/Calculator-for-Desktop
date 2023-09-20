@@ -24,13 +24,18 @@ enum class KeyType {
 fun String.number() = Key(this, type = KeyType.Number)
 fun String.command() = Key(this, type = KeyType.Command)
 
-fun createKey(value: String, type: KeyType, icon: ImageVector? = null, onClick: ((mainOutput: MutableState<TextFieldValue>) -> Unit)? = null) =
+fun createKey(
+    value: String,
+    type: KeyType,
+    icon: ImageVector? = null,
+    onClick: ((mainOutput: MutableState<TextFieldValue>) -> Unit)? = null
+) =
     Key(value, type, icon, onClick)
 
 //等于
-val keyEquals = createKey("=" , KeyType.Command) { mainOutput ->
+val keyEquals = createKey("=", KeyType.Command) { mainOutput ->
     val input = mainOutput.value.text
-    calculate(input)?.let { result ->
+    calculate("$input+0")?.let { result ->
         mainOutput.value = TextFieldValue(text = result)
     }
 }
@@ -53,10 +58,9 @@ val keyClear = createKey("AC", KeyType.Command) { mainOutput ->
 //键盘切换
 var KeyBoardValues by mutableStateOf(false)
 
-val KeyChange= createKey("切换",KeyType.Command, onClick = {
-    KeyBoardValues=!KeyBoardValues
-    println(KeyBoardValues)
-})
+val KeyChange = createKey("切换", KeyType.Command) {
+    KeyBoardValues = !KeyBoardValues
+}
 
 //倒数
 val KeyReciprocal = createKey("1/x", KeyType.Number) { mainOutput ->
@@ -66,25 +70,42 @@ val KeyReciprocal = createKey("1/x", KeyType.Number) { mainOutput ->
 }
 
 //阶乘
-val KeyFactorial= createKey("x!",KeyType.Number){mainOutput ->
+val KeyFactorial = createKey("x!", KeyType.Number) { mainOutput ->
     val currentText = mainOutput.value.text
     val newText = "$currentText!"
     mainOutput.value = TextFieldValue(text = newText)
 }
 
-//键盘位置分布
-val HigherKeyboardLayout = listOf(
-    listOf("2nd".number(),"√".number(),"C".number(), KeyFactorial, KeyReciprocal,"π".number(),"e".number()),
-    listOf("log".number(),"^".number(),keyClear, "7".number(), "4".number(), "1".number(), KeyChange),
-    listOf("sin".number(),",".number(),keyDelete, "8".number(), "5".number(), "2".number(), "0".number()),
-    listOf("cos".number(),"(".number(),"%".command(), "9".number(), "6".number(), "3".number(), ".".number()),
-    listOf("tan".number(),")".number(),"÷".command(), "x".command(), "-".command(), "+".command(), keyEquals)
-)
+//反三角函数
+var IFTValues by mutableStateOf(false)
 
-val SimpleKeyboardLayout = listOf(
-    listOf(keyClear, "7".number(), "4".number(), "1".number(), KeyChange),
-    listOf(keyDelete, "8".number(), "5".number(), "2".number(), "0".number()),
-    listOf("%".command(), "9".number(), "6".number(), "3".number(), ".".number()),
-    listOf("÷".command(), "x".command(), "-".command(), "+".command(), keyEquals)
-)
+val KeyITF = createKey("2nd", KeyType.Command) {
+    IFTValues = !IFTValues
+}
+
+//键盘位置分布
+object KeyboardLayout {
+    val HigherKeyboardLayout = listOf(
+        listOf(KeyITF, "√".number(), "C".number(), KeyFactorial, KeyReciprocal, "π".number(), "e".number()),
+        listOf("log".number(), "^".number(), keyClear, "7".number(), "4".number(), "1".number(), KeyChange),
+        listOf("sin".number(), ",".number(), keyDelete, "8".number(), "5".number(), "2".number(), "0".number()),
+        listOf("cos".number(), "(".number(), "%".command(), "9".number(), "6".number(), "3".number(), ".".number()),
+        listOf("tan".number(), ")".number(), "÷".command(), "x".command(), "-".command(), "+".command(), keyEquals)
+    )
+
+    val HigherITFKeyboardLayout = listOf(
+        listOf(KeyITF, "√".number(), "C".number(), KeyFactorial, KeyReciprocal, "π".number(), "e".number()),
+        listOf("log".number(), "^".number(), keyClear, "7".number(), "4".number(), "1".number(), KeyChange),
+        listOf("arcsin".number(), ",".number(), keyDelete, "8".number(), "5".number(), "2".number(), "0".number()),
+        listOf("arccos".number(), "(".number(), "%".command(), "9".number(), "6".number(), "3".number(), ".".number()),
+        listOf("arctan".number(), ")".number(), "÷".command(), "x".command(), "-".command(), "+".command(), keyEquals)
+    )
+
+    val SimpleKeyboardLayout = listOf(
+        listOf(keyClear, "7".number(), "4".number(), "1".number(), KeyChange),
+        listOf(keyDelete, "8".number(), "5".number(), "2".number(), "0".number()),
+        listOf("%".command(), "9".number(), "6".number(), "3".number(), ".".number()),
+        listOf("÷".command(), "x".command(), "-".command(), "+".command(), keyEquals)
+    )
+}
 
