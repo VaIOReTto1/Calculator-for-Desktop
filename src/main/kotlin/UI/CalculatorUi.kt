@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
@@ -46,7 +47,7 @@ fun CalculatorKey(
             .padding(CALCULATOR_PADDING)
             .clickable { onClick() }
             .background(if (active) KEY_ACTIVE_BACKGROUND else MaterialTheme.colors.background)
-            .border(width = KEY_BORDER_WIDTH, color = KEY_BORDER_COLOR)
+            .border(width = KEY_BORDER_WIDTH, color = KEY_BORDER_COLOR, shape = RoundedCornerShape(8.dp))
             .onPointerEvent(PointerEventType.Move) {
             }
             .onPointerEvent(PointerEventType.Enter) {
@@ -103,8 +104,9 @@ fun CalculatorKeyView(modifier: Modifier, key: Key?, mainOutput: MutableState<Te
 
 @Composable
 fun CalculatorKeyboard(mainOutput: MutableState<TextFieldValue>) {
+    val currentKeyBoard = if (KeyBoardValues) HigherKeyboardLayout else SimpleKeyboardLayout
     Row(modifier = Modifier.fillMaxSize()) {
-        KeyboardLayout.forEach { keyColumn ->
+        currentKeyBoard.forEach { keyColumn ->
             Column(modifier = Modifier.weight(1f)) {
                 keyColumn.forEach { key ->
                     CalculatorKeyView(Modifier.weight(1f), key, mainOutput)
@@ -113,7 +115,6 @@ fun CalculatorKeyboard(mainOutput: MutableState<TextFieldValue>) {
         }
     }
 }
-
 @Composable
 fun Calculator(
     modifier: Modifier,
