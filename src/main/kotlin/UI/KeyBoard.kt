@@ -32,11 +32,17 @@ fun createKey(
 ) =
     Key(value, type, icon, onClick)
 
+//存储历史记录
+var historyList by mutableStateOf(mutableListOf<String>())
+
 //等于
 val keyEquals = createKey("=", KeyType.Command) { mainOutput ->
     val input = mainOutput.value.text
     calculate("$input+0")?.let { result ->
-        mainOutput.value = TextFieldValue(text = result)
+        val Count = "$input=$result"
+        // 将历史记录添加到链表中
+        historyList.add(Count)
+        mainOutput.value = TextFieldValue(text = Count)
     }
 }
 
