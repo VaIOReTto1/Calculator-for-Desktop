@@ -38,7 +38,7 @@ var historyList by mutableStateOf(mutableListOf<String>())
 //等于
 val keyEquals = createKey("=", KeyType.Command) { mainOutput ->
     val input = mainOutput.value.text
-    calculate("$input+0")?.let { result ->
+    calculate(input)?.let { result ->
         val Count = "$input=$result"
         // 将历史记录添加到链表中
         historyList.add(Count)
