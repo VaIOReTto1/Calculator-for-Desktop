@@ -3,27 +3,7 @@ package CalculateService
 import java.util.*
 import kotlin.math.*
 
-//val OPERATORS = arrayOf('+', '-', '*', '/')
-//
-////计算
-//fun calculate(input: String): String? {
-//    val expression = input.replace('x', '*').replace('÷', '/')
-//    if (!OPERATORS.any { expression.contains(it) } || OPERATORS.any { expression.endsWith(it) }) {
-//        return null
-//    }
-//    return try {
-//        //保留小数点后10位
-//        val result = BigDecimal(Expression(expression).calculate())
-//            .round(MathContext(10, RoundingMode.HALF_UP))
-//            .setScale(10, RoundingMode.HALF_UP)
-//            .stripTrailingZeros()
-//        result.toPlainString()
-//    } catch (e: Exception) {
-//        null
-//    }
-//}
-
-val OPERATORS = arrayOf("+", "-", "*", "/")
+val OPERATORS = arrayOf("+", "-", "*", "/","^")
 val PRECEDENCE = mapOf("+" to 1, "-" to 1, "*" to 2, "/" to 2, "^" to 3)
 
 fun calculate(input: String): String? {
@@ -54,7 +34,7 @@ fun tokenize(expression: String): List<String> {
             currentToken += char
         } else if (char == '%') {
             isPercentage = true
-        } else if (char in "sctar".toCharArray()) {
+        } else if (char in "scta".toCharArray()) {
             val functionChars = when (expression.substring(i, i + 6)) {
                 "arcsin", "arccos", "arctan" -> expression.substring(i, i + 6)
                 else -> expression.substring(i, i + 3)
@@ -81,9 +61,9 @@ fun tokenize(expression: String): List<String> {
                 else -> 0.0
             }
             tokens.add(result.toString())
-
             continue
         } else {
+            //计算百分比
             if (currentToken.isNotEmpty()) {
                 if (isPercentage) {
                     val value = currentToken.toDouble() / 100.0
@@ -102,6 +82,7 @@ fun tokenize(expression: String): List<String> {
     }
 
     if (currentToken.isNotEmpty()) {
+        //计算百分比
         if (isPercentage) {
             val value = currentToken.toDouble() / 100.0
             tokens.add(value.toString())
@@ -154,6 +135,7 @@ fun infixToPostfix(tokens: List<String>): MutableList<String>? {
 
 fun evaluatePostfix(postfix: List<String>): Double? {
     val stack = LinkedList<Double>()
+    println(postfix)
 
     for (token in postfix) {
         if (token.isNumeric()) {
@@ -161,6 +143,7 @@ fun evaluatePostfix(postfix: List<String>): Double? {
         } else if (token in OPERATORS && stack.size >= 2) {
             val b = stack.removeLast()
             val a = stack.removeLast()
+            println(token)
             val result = when (token) {
                 "+" -> a + b
                 "-" -> a - b
@@ -169,6 +152,7 @@ fun evaluatePostfix(postfix: List<String>): Double? {
                 "^" -> Math.pow(a, b)
                 else -> return null
             }
+            println(result)
             stack.add(result)
         } else {
             return null
