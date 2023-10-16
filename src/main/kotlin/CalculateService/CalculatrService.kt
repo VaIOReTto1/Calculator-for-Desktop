@@ -1,5 +1,6 @@
 package CalculateService
 
+import java.util.*
 import kotlin.math.*
 
 //val OPERATORS = arrayOf('+', '-', '*', '/')
@@ -40,9 +41,8 @@ fun evaluateExpression(expression: String): Double? {
     return postfix?.let { evaluatePostfix(it) }
 }
 
-//分割字符传入
 fun tokenize(expression: String): List<String> {
-    val tokens = mutableListOf<String>()
+    val tokens = LinkedList<String>()
     var currentToken = ""
     var isPercentage = false
 
@@ -54,62 +54,36 @@ fun tokenize(expression: String): List<String> {
             currentToken += char
         } else if (char == '%') {
             isPercentage = true
-        } else if (char == 's' || char == 'c' || char == 't' || char == 'a') {
-            val TFChars = expression.substring(i, i + 3)
-            val ITFChars = expression.substring(i, i + 6)
-
-            //计算三角函数
-            if (TFChars == "sin" || TFChars == "cos" || TFChars == "tan") {
-                val end = i + 3
-                val innerExpression = StringBuilder()
-
-                for (j in end until expression.length) {
-                    if (expression[j] == ')') {
-                        i = end + j
-                        break
-                    } else if (expression[j] != '(') {
-                        innerExpression.append(expression[j])
-                    }
-                }
-
-                val result = when (TFChars) {
-                    "sin" -> sin(evaluateExpression(innerExpression.toString()) ?: 0.0)
-                    "cos" -> cos(evaluateExpression(innerExpression.toString()) ?: 0.0)
-                    "tan" -> tan(evaluateExpression(innerExpression.toString()) ?: 0.0)
-                    else -> 0.0
-                }
-                tokens.add(result.toString())
-
-                continue
+        } else if (char in "sctar".toCharArray()) {
+            val functionChars = when (expression.substring(i, i + 6)) {
+                "arcsin", "arccos", "arctan" -> expression.substring(i, i + 6)
+                else -> expression.substring(i, i + 3)
             }
-            //计算反三角函数
-            else if (ITFChars == "arcsin" || ITFChars == "arccos" || ITFChars == "arctan") {
-                val end = i + 6
-                println(expression[end])
-                val innerExpression = StringBuilder()
+            val end = i + functionChars.length
+            val innerExpression = StringBuilder()
 
-                for (j in end until expression.length) {
-                    if (expression[j] == ')') {
-                        i = end + j
-                        break
-                    } else if (expression[j] != '(') {
-                        innerExpression.append(expression[j])
-                    }
+            for (j in end until expression.length) {
+                if (expression[j] == ')') {
+                    i = end + j
+                    break
+                } else if (expression[j] != '(') {
+                    innerExpression.append(expression[j])
                 }
-
-                val result = when (ITFChars) {
-                    "arcsin" -> asin(evaluateExpression(innerExpression.toString()) ?: 0.0)
-                    "arccos" -> acos(evaluateExpression(innerExpression.toString()) ?: 0.0)
-                    "arctan" -> atan(evaluateExpression(innerExpression.toString()) ?: 0.0)
-                    else -> 0.0
-                }
-                tokens.add(result.toString())
-
-                continue
             }
-        }
-        //计算百分比
-        else {
+
+            val result = when (functionChars) {
+                "sin" -> sin(evaluateExpression(innerExpression.toString()) ?: 0.0)
+                "cos" -> cos(evaluateExpression(innerExpression.toString()) ?: 0.0)
+                "tan" -> tan(evaluateExpression(innerExpression.toString()) ?: 0.0)
+                "arcsin" -> asin(evaluateExpression(innerExpression.toString()) ?: 0.0)
+                "arccos" -> acos(evaluateExpression(innerExpression.toString()) ?: 0.0)
+                "arctan" -> atan(evaluateExpression(innerExpression.toString()) ?: 0.0)
+                else -> 0.0
+            }
+            tokens.add(result.toString())
+
+            continue
+        } else {
             if (currentToken.isNotEmpty()) {
                 if (isPercentage) {
                     val value = currentToken.toDouble() / 100.0
@@ -127,23 +101,22 @@ fun tokenize(expression: String): List<String> {
         i++
     }
 
-    //转化π和e
-    for (n in tokens.indices) {
-        if (tokens[n] == "π") {
-            tokens[n] = Math.PI.toString()
-        } else if (tokens[n] == "e") {
-            tokens[n] = Math.E.toString()
+    if (currentToken.isNotEmpty()) {
+        if (isPercentage) {
+            val value = currentToken.toDouble() / 100.0
+            tokens.add(value.toString())
+        } else {
+            tokens.add(currentToken)
         }
     }
 
+    tokens.replaceAll { if (it == "π") Math.PI.toString() else if (it == "e") Math.E.toString() else it }
     return tokens.filter { it.isNotEmpty() }
 }
 
-
-//中缀表达式转换为后缀表达式
 fun infixToPostfix(tokens: List<String>): MutableList<String>? {
     val output = mutableListOf<String>()
-    val stack = mutableListOf<String>()
+    val stack = LinkedList<String>()
 
     for (token in tokens) {
         if (token.isNumeric()) {
@@ -152,17 +125,17 @@ fun infixToPostfix(tokens: List<String>): MutableList<String>? {
             while (stack.isNotEmpty() && stack.last() in OPERATORS &&
                 (PRECEDENCE[stack.last()] ?: 0) >= (PRECEDENCE[token] ?: 0)
             ) {
-                output.add(stack.removeAt(stack.size - 1))
+                output.add(stack.removeLast())
             }
             stack.add(token)
         } else if (token == "(") {
             stack.add(token)
         } else if (token == ")") {
             while (stack.isNotEmpty() && stack.last() != "(") {
-                output.add(stack.removeAt(stack.size - 1))
+                output.add(stack.removeLast())
             }
             if (stack.isNotEmpty() && stack.last() == "(") {
-                stack.removeAt(stack.size - 1)
+                stack.removeLast()
             } else {
                 return null
             }
@@ -173,30 +146,27 @@ fun infixToPostfix(tokens: List<String>): MutableList<String>? {
         if (stack.last() == "(" || stack.last() == ")") {
             return null
         }
-        output.add(stack.removeAt(stack.size - 1))
+        output.add(stack.removeLast())
     }
 
     return output
 }
 
-//计算后缀表达式
 fun evaluatePostfix(postfix: List<String>): Double? {
-    val stack = mutableListOf<Double>()
+    val stack = LinkedList<Double>()
 
     for (token in postfix) {
         if (token.isNumeric()) {
             stack.add(token.toDouble())
-        }
-        //四则运算
-        else if (token in OPERATORS && stack.size >= 2) {
-            val b = stack.removeAt(stack.size - 1)
-            val a = stack.removeAt(stack.size - 1)
+        } else if (token in OPERATORS && stack.size >= 2) {
+            val b = stack.removeLast()
+            val a = stack.removeLast()
             val result = when (token) {
                 "+" -> a + b
                 "-" -> a - b
                 "*" -> a * b
                 "/" -> if (b != 0.0) a / b else return null
-                "^" -> a.pow(b) // 幂运算
+                "^" -> Math.pow(a, b)
                 else -> return null
             }
             stack.add(result)
@@ -205,10 +175,9 @@ fun evaluatePostfix(postfix: List<String>): Double? {
         }
     }
 
-    return if (stack.size == 1) stack[0] else null
+    return if (stack.size == 1) stack.last else null
 }
 
-//判断是否能转化为double类型
 fun String.isNumeric(): Boolean {
     return this.toDoubleOrNull() != null
 }
