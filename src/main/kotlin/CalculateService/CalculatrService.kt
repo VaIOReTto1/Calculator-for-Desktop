@@ -3,7 +3,7 @@ package CalculateService
 import java.util.*
 import kotlin.math.*
 
-val OPERATORS = arrayOf("+", "-", "*", "/","^")
+val OPERATORS = arrayOf("+", "-", "*", "/", "^")
 val PRECEDENCE = mapOf("+" to 1, "-" to 1, "*" to 2, "/" to 2, "^" to 3)
 
 fun calculate(input: String): String? {

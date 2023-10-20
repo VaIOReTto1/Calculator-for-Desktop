@@ -1,6 +1,7 @@
 import Config.lightThemeColors
 import UI.Display
 import UI.Calculator
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.material.MaterialTheme
@@ -8,6 +9,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
@@ -22,13 +24,13 @@ fun main() = application {
                 isOpen.value = false
             },
             title = "Calculator",
-            state = rememberWindowState(width = 500.dp, height = 650.dp),
+            state = rememberWindowState(width = 380.dp, height = 620.dp),
         ) {
             MaterialTheme(colors = lightThemeColors) {
                 //初始值设为0
                 val mainOutput = remember { mutableStateOf(TextFieldValue("0")) }
                 //展示计算器
-                Column(Modifier.fillMaxHeight()) {
+                Column(Modifier.fillMaxHeight().background(Color(0xffffffff))) {
                     Display(
                         Modifier.weight(1f),
                         mainOutput

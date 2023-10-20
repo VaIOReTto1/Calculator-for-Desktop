@@ -16,18 +16,22 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 object CalculatorStyle {
     val KEY_BORDER_WIDTH = 1.dp
-    val KEY_BORDER_COLOR = Color.Gray
-    val KEY_ACTIVE_BACKGROUND = Color.White
+    val KEY_BORDER_COLOR = Color(0xfffafafa)
+    val KEY_ACTIVE_BACKGROUND = Color(0xffd4d4d4)
 }
 
 //计算器背景
@@ -52,15 +56,15 @@ fun CalculatorKey(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
-        modifier = modifier.fillMaxWidth()
-            .padding(CALCULATOR_PADDING)
+        modifier = modifier
+            .padding(CALCULATOR_PADDING).fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
             .clickable(
                 onClick = { onClick() },
                 indication = null, // 设置为 null 去掉水波纹效果
                 interactionSource = remember { MutableInteractionSource() }
             )
             .background(if (active) KEY_ACTIVE_BACKGROUND else MaterialTheme.colors.background)
-            .border(width = KEY_BORDER_WIDTH, color = KEY_BORDER_COLOR, shape = RoundedCornerShape(8.dp))
             .onPointerEvent(PointerEventType.Move) {
             }
             .onPointerEvent(PointerEventType.Enter) {
@@ -68,7 +72,8 @@ fun CalculatorKey(
             }
             .onPointerEvent(PointerEventType.Exit) {
                 active = false
-            },
+            } //.then(if (active) Modifier.width(70.dp) else Modifier.fillMaxWidth())
+        ,
         content = children
     )
 }
@@ -94,12 +99,38 @@ fun CalculatorKeyView(modifier: Modifier, key: Key?, mainOutput: MutableState<Te
             val textStyle = if (key.type == KeyType.Command) {
                 TextStyle(
                     color = MaterialTheme.colors.primary,
-                    fontSize = 22.sp
+                    fontSize = 20.sp,
+                    fontFamily = FontFamily.Monospace,
+                    shadow = Shadow(
+                        color = Color(0xffffe8cc),
+                        offset = Offset(2.toFloat(), 2.toFloat()),
+                        blurRadius = 2.toFloat()
+                    )
                 )
             } else {
-                TextStyle(
-                    fontSize = 29.sp
-                )
+                if (key.sHtype == KeyType.Simple) {
+                    TextStyle(
+                        color = Color(0xff121212),
+                        fontSize = 22.sp,
+                        fontFamily = FontFamily.Monospace,
+                        shadow = Shadow(
+                            color = Color(0xffd0d0d0),
+                            offset = Offset(2.toFloat(), 2.toFloat()),
+                            blurRadius = 2.toFloat()
+                        )
+                    )
+                } else {
+                    TextStyle(
+                        color = Color(0xff888888),
+                        fontSize = 18.sp,
+                        fontFamily = FontFamily.Monospace,
+                        shadow = Shadow(
+                            color = Color(0xffdbdbdb),
+                            offset = Offset(2.toFloat(), 2.toFloat()),
+                            blurRadius = 2.toFloat()
+                        )
+                    )
+                }
             }//数字键
             Text(
                 text = key.value,
