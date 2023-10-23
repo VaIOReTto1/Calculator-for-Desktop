@@ -16,8 +16,11 @@ fun calculate(input: String): String? {
 }
 
 fun evaluateExpression(expression: String): Double? {
+    println(expression)
     val tokens = tokenize(expression)
+    println(tokens)
     val postfix = infixToPostfix(tokens)
+    println(postfix)
     return postfix?.let { evaluatePostfix(it) }
 }
 
@@ -82,6 +85,25 @@ fun tokenize(expression: String): List<String> {
             }
             val result = calculateCombination(selectnumber, totalnumber)
             tokens.add(result)
+        } else if (char == '√') {
+            //计算根号
+            i++
+            val sb = StringBuilder()
+            var foundNumber = false
+
+            for (k in i until expression.length) {
+                val number = expression[k]
+                println("$number $i ${expression.length}")
+                if (number.isDigit()) {
+                    sb.append(number)
+                    foundNumber = true
+                } else if (foundNumber) {
+                    break
+                }
+            }
+
+            val result = sb.toString().toDouble().pow(0.5)
+            tokens.add(result.toString())
         } else {
             //计算百分比
             if (currentToken.isNotEmpty()) {
