@@ -104,6 +104,41 @@ fun tokenize(expression: String): List<String> {
 
             val result = sb.toString().toDouble().pow(0.5)
             tokens.add(result.toString())
+        } else if (char == 'l') {
+            //计算对数
+            i += 4
+            var foundNumber = false
+            val logarithm = StringBuilder()
+            val baseNumber = StringBuilder()
+            var number = expression[i]
+            println(number)
+            while (number.isDigit()) {
+                if (number.isDigit()) {
+                    logarithm.append(number)
+                    foundNumber = true
+                } else if (foundNumber) {
+                    break
+                }
+                i++
+                number = expression[i]
+            }
+            println(number)
+            i++
+            number = expression[i]
+            while (number.isDigit()) {
+                if (number.isDigit()) {
+                    baseNumber.append(number)
+                    foundNumber = true
+                } else if (foundNumber) {
+                    break
+                }
+                i++
+                number = expression[i]
+            }
+            println(number)
+            val result = log(logarithm.toString().toDouble(), baseNumber.toString().toDouble())
+            println(result)
+            tokens.add(result.toString())
         } else {
             //计算百分比
             if (currentToken.isNotEmpty()) {
