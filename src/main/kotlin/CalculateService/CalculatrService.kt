@@ -3,8 +3,8 @@ package CalculateService
 import java.util.*
 import kotlin.math.*
 
-val OPERATORS = arrayOf("+", "-", "*", "/", "^")
-val PRECEDENCE = mapOf("+" to 1, "-" to 1, "*" to 2, "/" to 2, "^" to 3)
+val OPERATORS = arrayOf("+", "-", "*", "/", "^", "!")
+val PRECEDENCE = mapOf("+" to 1, "-" to 1, "*" to 2, "/" to 2, "^" to 3, "!" to 3)
 
 fun calculate(input: String): String? {
     val expression = input.replace('x', '*').replace('÷', '/')
@@ -62,31 +62,26 @@ fun tokenize(expression: String): List<String> {
             }
             tokens.add(result.toString())
             continue
-        }
-        //计算排列组合数
-        else if (char == 'C') {
+        } else if (char == 'C') {
+            //计算排列组合数
             i += 2
             var selectnumber = 0
             var totalnumber = 0
             var number = expression[i]
-            while (number - '0' >= 0) {
-                selectnumber *= 10
-                val a = number - '0'
-                selectnumber += a
+            while (number.isDigit()) {
+                selectnumber = selectnumber * 10 + (number - '0')
                 i++
                 number = expression[i]
             }
             i++
             number = expression[i]
-            while (number - '0' >= 0) {
-                totalnumber *= 10
-                val a = number - '0'
-                totalnumber += a
+            while (number.isDigit()) {
+                totalnumber = totalnumber * 10 + (number - '0')
                 i++
                 number = expression[i]
             }
             val result = calculateCombination(selectnumber, totalnumber)
-            tokens.add(result.toString())
+            tokens.add(result)
         } else {
             //计算百分比
             if (currentToken.isNotEmpty()) {
@@ -106,8 +101,8 @@ fun tokenize(expression: String): List<String> {
         i++
     }
 
+    //计算百分比
     if (currentToken.isNotEmpty()) {
-        //计算百分比
         if (isPercentage) {
             val value = currentToken.toDouble() / 100.0
             tokens.add(value.toString())
@@ -120,28 +115,20 @@ fun tokenize(expression: String): List<String> {
     return tokens.filter { it.isNotEmpty() }
 }
 
-fun calculateCombination(k: Int, n: Int): String? {
-    if (n < 0 || k < 0 || k > n) {
-        return null
-    }
-
+//计算排列组合数
+fun calculateCombination(k: Int, n: Int): String {
     val result = (factorial(n, n - k + 1)) / factorial(k, 2)
     return result.toString()
 }
 
+//计算阶乘
 fun factorial(max: Int, min: Int): Long {
-    if (min == 0 || min == 1) {
-        return 1
-    }
     var result: Long = 1
     for (i in min..max) {
         result *= i.toLong()
     }
-    println(result)
-
     return result
 }
-
 
 fun infixToPostfix(tokens: List<String>): MutableList<String>? {
     val output = mutableListOf<String>()
@@ -183,24 +170,30 @@ fun infixToPostfix(tokens: List<String>): MutableList<String>? {
 
 fun evaluatePostfix(postfix: List<String>): Double? {
     val stack = LinkedList<Double>()
-    println(postfix)
 
     for (token in postfix) {
         if (token.isNumeric()) {
             stack.add(token.toDouble())
+        } else if (token == "!") {
+            //计算阶乘
+            if (stack.size >= 1) {
+                val operand1 = stack.removeLast()
+                val result = factorial(operand1.toInt(), 2).toDouble()
+                stack.add(result)
+            } else {
+                return null
+            }
         } else if (token in OPERATORS && stack.size >= 2) {
-            val b = stack.removeLast()
-            val a = stack.removeLast()
-            println(token)
+            val operand2 = stack.removeLast()
+            val operand1 = stack.removeLast()
             val result = when (token) {
-                "+" -> a + b
-                "-" -> a - b
-                "*" -> a * b
-                "/" -> if (b != 0.0) a / b else return null
-                "^" -> Math.pow(a, b)
+                "+" -> operand1 + operand2
+                "-" -> operand1 - operand2
+                "*" -> operand1 * operand2
+                "/" -> if (operand2 != 0.0) operand1 / operand2 else return null
+                "^" -> Math.pow(operand1, operand2)
                 else -> return null
             }
-            println(result)
             stack.add(result)
         } else {
             return null
