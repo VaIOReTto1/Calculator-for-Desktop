@@ -62,6 +62,31 @@ fun tokenize(expression: String): List<String> {
             }
             tokens.add(result.toString())
             continue
+        }
+        //计算排列组合数
+        else if (char == 'C') {
+            i += 2
+            var selectnumber = 0
+            var totalnumber = 0
+            var number = expression[i]
+            while (number - '0' >= 0) {
+                selectnumber *= 10
+                val a = number - '0'
+                selectnumber += a
+                i++
+                number = expression[i]
+            }
+            i++
+            number = expression[i]
+            while (number - '0' >= 0) {
+                totalnumber *= 10
+                val a = number - '0'
+                totalnumber += a
+                i++
+                number = expression[i]
+            }
+            val result = calculateCombination(selectnumber, totalnumber)
+            tokens.add(result.toString())
         } else {
             //计算百分比
             if (currentToken.isNotEmpty()) {
@@ -94,6 +119,29 @@ fun tokenize(expression: String): List<String> {
     tokens.replaceAll { if (it == "π") Math.PI.toString() else if (it == "e") Math.E.toString() else it }
     return tokens.filter { it.isNotEmpty() }
 }
+
+fun calculateCombination(k: Int, n: Int): String? {
+    if (n < 0 || k < 0 || k > n) {
+        return null
+    }
+
+    val result = (factorial(n, n - k + 1)) / factorial(k, 2)
+    return result.toString()
+}
+
+fun factorial(max: Int, min: Int): Long {
+    if (min == 0 || min == 1) {
+        return 1
+    }
+    var result: Long = 1
+    for (i in min..max) {
+        result *= i.toLong()
+    }
+    println(result)
+
+    return result
+}
+
 
 fun infixToPostfix(tokens: List<String>): MutableList<String>? {
     val output = mutableListOf<String>()
