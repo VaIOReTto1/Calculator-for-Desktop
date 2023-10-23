@@ -28,134 +28,124 @@ fun tokenize(expression: String): List<String> {
     val tokens = LinkedList<String>()
     var currentToken = ""
     var isPercentage = false
+    var currentIndex = 0
 
-    var i = 0
-    while (i < expression.length) {
-        val char = expression[i]
+    while (currentIndex < expression.length) {
+        val currentChar = expression[currentIndex]
 
-        if (char.isDigit() || char == '.') {
-            currentToken += char
-        } else if (char == '%') {
-            isPercentage = true
-        } else if (char in "scta".toCharArray()) {
-            val functionChars = when (expression.substring(i, i + 6)) {
-                "arcsin", "arccos", "arctan" -> expression.substring(i, i + 6)
-                else -> expression.substring(i, i + 3)
+        when {
+            currentChar.isDigit() || currentChar == '.' -> {
+                currentToken += currentChar
             }
-            val end = i + functionChars.length
-            val innerExpression = StringBuilder()
-
-            for (j in end until expression.length) {
-                if (expression[j] == ')') {
-                    i = end + j
-                    break
-                } else if (expression[j] != '(') {
-                    innerExpression.append(expression[j])
+            currentChar == '%' -> {
+                isPercentage = true
+            }
+            //计算三角函数
+            currentChar in "scta".toCharArray() -> {
+                val functionChars = when (expression.substring(currentIndex, currentIndex + 6)) {
+                    "arcsin", "arccos", "arctan" -> expression.substring(currentIndex, currentIndex + 6)
+                    else -> expression.substring(currentIndex, currentIndex + 3)
                 }
-            }
+                val end = currentIndex + functionChars.length
+                val innerExpression = StringBuilder()
 
-            val result = when (functionChars) {
-                "sin" -> sin(evaluateExpression(innerExpression.toString()) ?: 0.0)
-                "cos" -> cos(evaluateExpression(innerExpression.toString()) ?: 0.0)
-                "tan" -> tan(evaluateExpression(innerExpression.toString()) ?: 0.0)
-                "arcsin" -> asin(evaluateExpression(innerExpression.toString()) ?: 0.0)
-                "arccos" -> acos(evaluateExpression(innerExpression.toString()) ?: 0.0)
-                "arctan" -> atan(evaluateExpression(innerExpression.toString()) ?: 0.0)
-                else -> 0.0
+                for (j in end until expression.length) {
+                    if (expression[j] == ')') {
+                        currentIndex = end + j
+                        break
+                    } else if (expression[j] != '(') {
+                        innerExpression.append(expression[j])
+                    }
+                }
+
+                val result = when (functionChars) {
+                    "sin" -> sin(evaluateExpression(innerExpression.toString()) ?: 0.0)
+                    "cos" -> cos(evaluateExpression(innerExpression.toString()) ?: 0.0)
+                    "tan" -> tan(evaluateExpression(innerExpression.toString()) ?: 0.0)
+                    "arcsin" -> asin(evaluateExpression(innerExpression.toString()) ?: 0.0)
+                    "arccos" -> acos(evaluateExpression(innerExpression.toString()) ?: 0.0)
+                    "arctan" -> atan(evaluateExpression(innerExpression.toString()) ?: 0.0)
+                    else -> 0.0
+                }
+                tokens.add(result.toString())
+                continue
             }
-            tokens.add(result.toString())
-            continue
-        } else if (char == 'C') {
             //计算排列组合数
-            i += 2
-            var selectnumber = 0
-            var totalnumber = 0
-            var number = expression[i]
-            while (number.isDigit()) {
-                selectnumber = selectnumber * 10 + (number - '0')
-                i++
-                number = expression[i]
+            currentChar == 'C' -> {
+                currentIndex += 2
+                var selectNumber = 0
+                var totalNumber = 0
+                var number = expression[currentIndex]
+                while (number.isDigit()) {
+                    selectNumber = selectNumber * 10 + (number - '0')
+                    currentIndex++
+                    number = expression[currentIndex]
+                }
+                currentIndex++
+                number = expression[currentIndex]
+                while (number.isDigit()) {
+                    totalNumber = totalNumber * 10 + (number - '0')
+                    currentIndex++
+                    number = expression[currentIndex]
+                }
+                val result = calculateCombination(selectNumber, totalNumber)
+                tokens.add(result)
             }
-            i++
-            number = expression[i]
-            while (number.isDigit()) {
-                totalnumber = totalnumber * 10 + (number - '0')
-                i++
-                number = expression[i]
-            }
-            val result = calculateCombination(selectnumber, totalnumber)
-            tokens.add(result)
-        } else if (char == '√') {
             //计算根号
-            i++
-            val sb = StringBuilder()
-            var foundNumber = false
+            currentChar == '√' -> {
+                currentIndex++
+                val sb = StringBuilder()
 
-            for (k in i until expression.length) {
-                val number = expression[k]
-                println("$number $i ${expression.length}")
-                if (number.isDigit()) {
-                    sb.append(number)
-                    foundNumber = true
-                } else if (foundNumber) {
-                    break
+                for (k in currentIndex until expression.length) {
+                    val number = expression[k]
+                    if (number.isDigit()) {
+                        sb.append(number)
+                    }
                 }
-            }
 
-            val result = sb.toString().toDouble().pow(0.5)
-            tokens.add(result.toString())
-        } else if (char == 'l') {
+                val result = sb.toString().toDouble().pow(0.5)
+                tokens.add(result.toString())
+            }
             //计算对数
-            i += 4
-            var foundNumber = false
-            val logarithm = StringBuilder()
-            val baseNumber = StringBuilder()
-            var number = expression[i]
-            println(number)
-            while (number.isDigit()) {
-                if (number.isDigit()) {
+            currentChar == 'l' -> {
+                currentIndex += 4
+                val logarithm = StringBuilder()
+                val baseNumber = StringBuilder()
+                var number = expression[currentIndex]
+                while (number.isDigit()) {
                     logarithm.append(number)
-                    foundNumber = true
-                } else if (foundNumber) {
-                    break
+                    currentIndex++
+                    number = expression[currentIndex]
                 }
-                i++
-                number = expression[i]
-            }
-            println(number)
-            i++
-            number = expression[i]
-            while (number.isDigit()) {
-                if (number.isDigit()) {
+                currentIndex++
+                number = expression[currentIndex]
+                while (number.isDigit()) {
                     baseNumber.append(number)
-                    foundNumber = true
-                } else if (foundNumber) {
-                    break
+                    currentIndex++
+                    number = expression[currentIndex]
                 }
-                i++
-                number = expression[i]
+                val result = log(logarithm.toString().toDouble(), baseNumber.toString().toDouble())
+                tokens.add(result.toString())
             }
-            println(number)
-            val result = log(logarithm.toString().toDouble(), baseNumber.toString().toDouble())
-            println(result)
-            tokens.add(result.toString())
-        } else {
-            //计算百分比
-            if (currentToken.isNotEmpty()) {
-                if (isPercentage) {
-                    val value = currentToken.toDouble() / 100.0
-                    tokens.add(value.toString())
-                    isPercentage = false
-                } else {
-                    tokens.add(currentToken)
+            else -> {
+                //计算百分比
+                if (currentToken.isNotEmpty()) {
+                    if (isPercentage) {
+                        val value = currentToken.toDouble() / 100.0
+                        tokens.add(value.toString())
+                        isPercentage = false
+                    } else {
+                        tokens.add(currentToken)
+                    }
+                    currentToken = ""
                 }
-                currentToken = ""
-            }
-            if (char != ' ') {
-                tokens.add(char.toString())
+                if (currentChar != ' ') {
+                    tokens.add(currentChar.toString())
+                }
             }
         }
-        i++
+
+        currentIndex++
     }
 
     //计算百分比
