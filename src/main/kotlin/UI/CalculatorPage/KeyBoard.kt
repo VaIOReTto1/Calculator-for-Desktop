@@ -3,37 +3,36 @@ package UI.CalculatorPage
 import CalculateService.calculate
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.KeyboardArrowLeft
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.TextFieldValue
 
 data class Key(
     val value: String,
     val type: KeyType,
-    val sHtype: KeyType?=null,
+    val sHtype: KeyType? = null,
     val icon: ImageVector? = null,
     val onClick: ((mainOutput: MutableState<TextFieldValue>) -> Unit)? = null
 )
 
 enum class KeyType {
-    Number, Command,Simple, Higher
+    Number, Command, Simple, Higher
 }
 
 fun String.Simnumber() = Key(this, type = KeyType.Number, KeyType.Simple)
+
 fun String.Hignumber() = Key(this, type = KeyType.Number, KeyType.Higher)
+
 fun String.command() = Key(this, type = KeyType.Command)
 
 fun createKey(
     value: String,
     type: KeyType,
-    sHtype: KeyType?=null,
+    sHtype: KeyType? = null,
     icon: ImageVector? = null,
     onClick: ((mainOutput: MutableState<TextFieldValue>) -> Unit)? = null
 ) =
-    Key(value, type, sHtype, icon,onClick)
+    Key(value, type, sHtype, icon, onClick)
 
 //存储历史记录
 var historyList by mutableStateOf(mutableListOf<String>())
@@ -41,8 +40,8 @@ var historyList by mutableStateOf(mutableListOf<String>())
 //等于
 val keyEquals = createKey("=", KeyType.Command) { mainOutput ->
     val input = mainOutput.value.text
-    calculate(input)?.let { result ->
-        val Count = "$input=$result"
+    calculate(input).let { result ->
+        val Count = if (result == "输入格式有误") result else "$input=$result"
         // 将历史记录添加到链表中
         historyList.add(Count)
         mainOutput.value = TextFieldValue(text = Count)
@@ -96,18 +95,82 @@ val KeyITF = createKey("2nd", KeyType.Command) {
 object KeyboardLayout {
     val HigherKeyboardLayout = listOf(
         listOf(KeyITF, "√".Hignumber(), "C".Hignumber(), KeyFactorial, KeyReciprocal, "π".Hignumber(), KeyChange),
-        listOf("log".Hignumber(), "^".Hignumber(), keyClear, "7".Simnumber(), "4".Simnumber(), "1".Simnumber(), "e".Simnumber()),
-        listOf("sin".Hignumber(), ",".Hignumber(), keyDelete, "8".Simnumber(), "5".Simnumber(), "2".Simnumber(), "0".Simnumber()),
-        listOf("cos".Hignumber(), "(".Hignumber(), "%".command(), "9".Simnumber(), "6".Simnumber(), "3".Simnumber(), ".".Simnumber()),
-        listOf("tan".Hignumber(), ")".Hignumber(), "÷".command(), "x".command(), "-".command(), "+".command(), keyEquals)
+        listOf(
+            "log".Hignumber(),
+            "^".Hignumber(),
+            keyClear,
+            "7".Simnumber(),
+            "4".Simnumber(),
+            "1".Simnumber(),
+            "e".Simnumber()
+        ),
+        listOf(
+            "sin".Hignumber(),
+            ",".Hignumber(),
+            keyDelete,
+            "8".Simnumber(),
+            "5".Simnumber(),
+            "2".Simnumber(),
+            "0".Simnumber()
+        ),
+        listOf(
+            "cos".Hignumber(),
+            "(".Hignumber(),
+            "%".command(),
+            "9".Simnumber(),
+            "6".Simnumber(),
+            "3".Simnumber(),
+            ".".Simnumber()
+        ),
+        listOf(
+            "tan".Hignumber(),
+            ")".Hignumber(),
+            "÷".command(),
+            "x".command(),
+            "-".command(),
+            "+".command(),
+            keyEquals
+        )
     )
 
     val HigherITFKeyboardLayout = listOf(
         listOf(KeyITF, "√".Hignumber(), "C".Hignumber(), KeyFactorial, KeyReciprocal, "π".Hignumber(), KeyChange),
-        listOf("log".Hignumber(), "^".Hignumber(), keyClear, "7".Simnumber(), "4".Simnumber(), "1".Simnumber(), "e".Simnumber()),
-        listOf("arcsin".Hignumber(), ",".Hignumber(), keyDelete, "8".Simnumber(), "5".Simnumber(), "2".Simnumber(), "0".Simnumber()),
-        listOf("arccos".Hignumber(), "(".Hignumber(), "%".command(), "9".Simnumber(), "6".Simnumber(), "3".Simnumber(), ".".Simnumber()),
-        listOf("arctan".Hignumber(), ")".Hignumber(), "÷".command(), "x".command(), "-".command(), "+".command(), keyEquals)
+        listOf(
+            "log".Hignumber(),
+            "^".Hignumber(),
+            keyClear,
+            "7".Simnumber(),
+            "4".Simnumber(),
+            "1".Simnumber(),
+            "e".Simnumber()
+        ),
+        listOf(
+            "arcsin".Hignumber(),
+            ",".Hignumber(),
+            keyDelete,
+            "8".Simnumber(),
+            "5".Simnumber(),
+            "2".Simnumber(),
+            "0".Simnumber()
+        ),
+        listOf(
+            "arccos".Hignumber(),
+            "(".Hignumber(),
+            "%".command(),
+            "9".Simnumber(),
+            "6".Simnumber(),
+            "3".Simnumber(),
+            ".".Simnumber()
+        ),
+        listOf(
+            "arctan".Hignumber(),
+            ")".Hignumber(),
+            "÷".command(),
+            "x".command(),
+            "-".command(),
+            "+".command(),
+            keyEquals
+        )
     )
 
     val SimpleKeyboardLayout = listOf(

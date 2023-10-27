@@ -9,18 +9,18 @@ import androidx.compose.ui.Modifier
 
 
 @Composable
-fun CalculatorPage(){
+fun CalculatorPage() {
     //初始值设为0
     val mainOutput = remember { mutableStateOf(TextFieldValue("0")) }
     Column {
-                        //展示计算器
-                Display(
-                    Modifier.weight(1f),
-                    mainOutput
-                )
-                Calculator(
-                    Modifier.weight(4f),
-                    mainOutput
-                )
+        //展示计算器
+        Display(
+            Modifier.weight(1f),
+            mainOutput
+        )
+        Calculator(
+            Modifier.weight(4f),
+            mainOutput
+        )
     }
 }
