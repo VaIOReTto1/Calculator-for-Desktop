@@ -1,4 +1,4 @@
-package UI.ExchangeRate
+package UI.ExchangePage
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -12,7 +12,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ExchangeRateButton(
+fun ExchangeButton(
     items: Map<String, Double>,
     value: Double,
 ) {
@@ -37,7 +37,7 @@ fun ExchangeRateButton(
                     )
 
                     Text(
-                        text = "%.3f".format(value * rate),
+                        text = "%.6f".format(value * rate),
                         color = textColor,
                         textAlign = TextAlign.End,
                         modifier = Modifier.padding(8.dp).fillMaxWidth()

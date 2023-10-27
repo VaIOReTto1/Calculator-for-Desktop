@@ -1,7 +1,7 @@
 package UI.DrawerPage
 
 import UI.CalculatorPage.CalculatorPage
-import UI.ExchangeRate.ExchangeRatePage
+import UI.ExchangePage.*
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -28,7 +28,7 @@ fun HomePage() {
             Column(
                 modifier = Modifier.fillMaxHeight()
             ) {
-                DrawerPage()
+                DrawerPage(drawerState)
             }
         }
     ) {
@@ -49,7 +49,12 @@ fun HomePage() {
 
             when (Page.page.value) {
                 0 -> CalculatorPage()
-                1 -> ExchangeRatePage()
+                1 -> CurrencyPage()
+                2 -> VolumnPage()
+                3 -> LengthPage()
+                4 -> WeightPage()
+                5 -> TemperaturePage()
+                6 -> EnergyPage()
                 else -> Text("Page not found")
             }
         }

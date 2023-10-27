@@ -1,4 +1,4 @@
-package UI.ExchangeRate
+package UI.ExchangePage
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -18,13 +18,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun ExchangeRatePage() {
+fun VolumnPage() {
     val exchangeRates = mapOf(
-        "美元" to 0.14,
-        "欧元" to 0.13,
-        "日元" to 20.49,
-        "港币" to 1.07,
-        "韩元" to 185.23
+        "毫升" to 1000.0,
+        "立方米" to 0.001,
+        "盎司" to 33.81,
+        "杯(美制)" to 4.227,
+        "加仑(美制)" to 0.264
     )
 
     var textValue by remember { mutableStateOf("100") }
@@ -40,7 +40,7 @@ fun ExchangeRatePage() {
 
             Row {
                 Text(
-                    text = "人民币",
+                    text = "升",
                     color = Color.White,
                     modifier = Modifier.padding(8.dp)
                 )
@@ -64,6 +64,6 @@ fun ExchangeRatePage() {
 
         Box(modifier = Modifier.height(20.dp))
 
-        ExchangeRateButton(exchangeRates, textValue.toDouble())
+        ExchangeButton(exchangeRates, textValue.toDouble())
     }
 }
