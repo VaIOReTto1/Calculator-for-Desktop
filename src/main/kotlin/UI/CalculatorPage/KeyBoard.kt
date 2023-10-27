@@ -1,4 +1,4 @@
-package UI
+package UI.CalculatorPage
 
 import CalculateService.calculate
 import androidx.compose.material.icons.Icons
@@ -13,7 +13,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 data class Key(
     val value: String,
     val type: KeyType,
-    val sHtype:KeyType?=null,
+    val sHtype: KeyType?=null,
     val icon: ImageVector? = null,
     val onClick: ((mainOutput: MutableState<TextFieldValue>) -> Unit)? = null
 )
@@ -22,14 +22,14 @@ enum class KeyType {
     Number, Command,Simple, Higher
 }
 
-fun String.Simnumber() = Key(this, type = KeyType.Number,KeyType.Simple)
-fun String.Hignumber() = Key(this, type = KeyType.Number,KeyType.Higher)
+fun String.Simnumber() = Key(this, type = KeyType.Number, KeyType.Simple)
+fun String.Hignumber() = Key(this, type = KeyType.Number, KeyType.Higher)
 fun String.command() = Key(this, type = KeyType.Command)
 
 fun createKey(
     value: String,
     type: KeyType,
-    sHtype:KeyType?=null,
+    sHtype: KeyType?=null,
     icon: ImageVector? = null,
     onClick: ((mainOutput: MutableState<TextFieldValue>) -> Unit)? = null
 ) =

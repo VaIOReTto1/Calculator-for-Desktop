@@ -1,12 +1,12 @@
-package UI
+package UI.CalculatorPage
 
 import Config.CALCULATOR_PADDING
-import UI.CalculatorStyle.KEY_ACTIVE_BACKGROUND
-import UI.CalculatorStyle.KEY_BORDER_COLOR
-import UI.CalculatorStyle.KEY_BORDER_WIDTH
-import UI.KeyboardLayout.HigherITFKeyboardLayout
-import UI.KeyboardLayout.HigherKeyboardLayout
-import UI.KeyboardLayout.SimpleKeyboardLayout
+import UI.CalculatorPage.CalculatorStyle.KEY_ACTIVE_BACKGROUND
+import UI.CalculatorPage.CalculatorStyle.KEY_BORDER_COLOR
+import UI.CalculatorPage.CalculatorStyle.KEY_BORDER_WIDTH
+import UI.CalculatorPage.KeyboardLayout.HigherITFKeyboardLayout
+import UI.CalculatorPage.KeyboardLayout.HigherKeyboardLayout
+import UI.CalculatorPage.KeyboardLayout.SimpleKeyboardLayout
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable

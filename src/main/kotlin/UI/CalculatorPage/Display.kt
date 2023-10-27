@@ -1,7 +1,6 @@
-package UI
+package UI.CalculatorPage
 
 import Config.CALCULATOR_PADDING
-import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
@@ -9,7 +8,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -29,7 +27,7 @@ fun Display(
 ) {
     var historyList1 by mutableStateOf(mutableListOf<String>())
     historyList1 = historyList
-    val size=historyList1.size
+    val size = historyList1.size
 
     val scrollState = rememberScrollState()
     val listState = rememberLazyListState()
@@ -37,7 +35,7 @@ fun Display(
     //监听historyList1的变化并滚动到底部
     LaunchedEffect(size) {
         println(size)
-        if (size !=0)
+        if (size != 0)
             listState.scrollToItem(historyList1.lastIndex)
     }
 
@@ -45,7 +43,7 @@ fun Display(
         modifier = modifier
             .fillMaxWidth()
             .padding(start = CALCULATOR_PADDING, end = CALCULATOR_PADDING)
-            .background(MaterialTheme.colors.surface).scrollable(scrollState, orientation = Orientation.Vertical),
+            .scrollable(scrollState, orientation = Orientation.Vertical),
         verticalArrangement = Arrangement.Bottom,
         state = listState,
     ) {
@@ -63,8 +61,7 @@ fun Display(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(start = CALCULATOR_PADDING, end = CALCULATOR_PADDING)
-            .background(MaterialTheme.colors.surface),
+            .padding(start = CALCULATOR_PADDING, end = CALCULATOR_PADDING),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.End
     ) {
